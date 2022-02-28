@@ -75,7 +75,7 @@ func Insert[T any](a *[]T, i int, elem T) {
 
 // InsertMany inserts elems into a at index i.
 //
-// NOTE: the implementation of this method is different from that in slicetricks itself. This implementation
+// NOTE: the implementation of this method is different from that in SliceTricks itself. This implementation
 // is optimised for doing the insertion in-place.
 func InsertMany[T any](a *[]T, i int, elems ...T) {
 	if n := len(*a) + len(elems); n <= cap(*a) {
@@ -205,4 +205,38 @@ func SortAndDeduplicate[T comparable](a *[]T, less func(i, j int) bool) {
 		(*a)[j] = (*a)[i]
 	}
 	*a = (*a)[:j+1]
+}
+
+/* A couple more methods that aren't in SliceTricks but I couldn't help adding */
+
+// All returns true iff all elements in elem evaluate to true when passed to f.
+func All[T any](elems []T, f func(a T) bool) bool {
+	for _, elem := range elems {
+		if !f(elem) {
+			return false
+		}
+	}
+	return true
+}
+
+// Any returns true iff any element in elems evaluates to true when passed to f.
+func Any[T any](elems []T, f func(a T) bool) bool {
+	for _, elem := range elems {
+		if f(elem) {
+			return true
+		}
+	}
+	return false
+}
+
+// Any returns true iff no element in elems evaluates to true when passed to f.
+func None[T any](elems []T, f func(a T) bool) bool {
+	return !Any(elems, f)
+}
+
+// ContainsComparable returns true iff the given haystack contains the given needle.
+func ContainsComparable[T comparable](haystack []T, needle T) bool {
+	return Any(haystack, func(elem T) bool {
+		return elem == needle
+	})
 }

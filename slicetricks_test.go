@@ -297,3 +297,43 @@ func TestSortAndDeduplicate(t *testing.T) {
 	})
 	assert.Equal(t, []int{3, 4, 5, 6, 9}, x)
 }
+
+func TestAny(t *testing.T) {
+	x := []int{2, 3, 4, 5}
+	assert.Equal(t, true, Any(x, func(elem int) bool {
+		return elem%2 == 0
+	}))
+
+	assert.Equal(t, false, Any(x, func(elem int) bool {
+		return elem%7 == 0
+	}))
+}
+
+func TestAll(t *testing.T) {
+	x := []int{2, 3, 4, 5}
+	assert.Equal(t, true, All(x, func(elem int) bool {
+		return elem > 0
+	}))
+
+	assert.Equal(t, false, All(x, func(elem int) bool {
+		return elem > 2
+	}))
+}
+
+func TestNone(t *testing.T) {
+	x := []int{2, 3, 4, 5}
+	assert.Equal(t, true, None(x, func(elem int) bool {
+		return elem > 10
+	}))
+
+	assert.Equal(t, false, None(x, func(elem int) bool {
+		return elem > 2
+	}))
+}
+
+func TestContainsComparable(t *testing.T) {
+	x := []int{2, 3, 4, 5}
+	assert.Equal(t, true, ContainsComparable(x, 2))
+	assert.Equal(t, true, ContainsComparable(x, 5))
+	assert.Equal(t, false, ContainsComparable(x, 7))
+}
