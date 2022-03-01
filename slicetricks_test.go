@@ -116,17 +116,9 @@ func TestFilter(t *testing.T) {
 	assert.Equal(t, []int{0, 2}, x)
 }
 
-func TestFilterZeroAlloc(t *testing.T) {
+func TestFilterNoGC(t *testing.T) {
 	x := []int{0, 1, 2, 3}
-	FilterZeroAlloc(&x, func(i int) bool {
-		return i%2 == 0
-	})
-	assert.Equal(t, []int{0, 2}, x)
-}
-
-func TestFilterZeroAllocNoGC(t *testing.T) {
-	x := []int{0, 1, 2, 3}
-	FilterZeroAllocNoGC(&x, func(i int) bool {
+	FilterNoGC(&x, func(i int) bool {
 		return i%2 == 0
 	})
 	assert.Equal(t, []int{0, 2}, x)

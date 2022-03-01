@@ -53,18 +53,6 @@ func Extend[T any](a *[]T, n int) {
 	*a = append(*a, make([]T, n)...)
 }
 
-// Filter removes any elements from a for which keep returns false.
-func Filter[T any](a *[]T, keep func(t T) bool) {
-	n := 0
-	for _, x := range *a {
-		if keep(x) {
-			(*a)[n] = x
-			n++
-		}
-	}
-	*a = (*a)[:n]
-}
-
 // Insert inserts elem into a at index i.
 func Insert[T any](a *[]T, i int, elem T) {
 	var zero T
@@ -135,31 +123,36 @@ func Batches[T any](a []T, batchSize int) [][]T {
 	return batches
 }
 
-// FilterZeroAllocNoGC removes any elements from a for which keep returns false, without any allocation.
-// Elements may not be garbage collected after removal, so calling this method can lead to memory leaks.
-func FilterZeroAllocNoGC[T any](a *[]T, keep func(t T) bool) {
-	b := (*a)[:0]
+// Filter removes any elements from a for which keep returns false.
+func Filter[T any](a *[]T, keep func(t T) bool) {
+	n := 0
 	for _, x := range *a {
 		if keep(x) {
-			b = append(b, x)
+			(*a)[n] = x
+			n++
 		}
 	}
-	*a = b
-}
 
-// FilterZeroAlloc removes any elements from a for which keep returns false, without any allocation.
-func FilterZeroAlloc[T any](a *[]T, keep func(t T) bool) {
-	b := (*a)[:0]
-	for _, x := range *a {
-		if keep(x) {
-			b = append(b, x)
-		}
-	}
-	for i := len(b); i < len(*a); i++ {
+	for i := n; i < len(*a); i++ {
 		var zero T
 		(*a)[i] = zero
 	}
-	*a = b
+
+	*a = (*a)[:n]
+}
+
+// FilterNoGC removes any elements from a for which keep returns false.  It may not be possible to garbage collect
+// elements after removal, so calling this method can lead to memory leaks.
+func FilterNoGC[T any](a *[]T, keep func(t T) bool) {
+	n := 0
+	for _, x := range *a {
+		if keep(x) {
+			(*a)[n] = x
+			n++
+		}
+	}
+
+	*a = (*a)[:n]
 }
 
 func Reverse[T any](a []T) {
